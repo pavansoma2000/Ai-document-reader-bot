@@ -1,0 +1,9 @@
+langchain
+langchain-community
+chromadb
+pypdf
+sentence-transformers
+streamlit
+ollama
+
+torch --index-url https://download.pytorch.org/whl/cpu

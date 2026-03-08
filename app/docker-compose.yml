@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+
+  ai-bot:
+    build: .
+    container_name: ai-doc-bot
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./documents:/app/documents
+      - ./vectordb:/app/vectordb
+    depends_on:
+      - ollama
+
+volumes:
+  ollama_data:
