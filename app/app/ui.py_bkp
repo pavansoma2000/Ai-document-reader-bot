@@ -1,0 +1,36 @@
+import streamlit as st
+from search import db
+import ollama
+
+st.title("📄 AI Document Search")
+
+query = st.text_input("Search documents")
+
+if query:
+
+    docs = db.similarity_search(query, k=3)
+
+    context = "\n".join([d.page_content for d in docs])
+
+    prompt = f"""
+Answer only using the context.
+
+Context:
+{context}
+
+Question:
+{query}
+"""
+
+    response = ollama.chat(
+        model="llama3",
+        messages=[{"role":"user","content":prompt}]
+    )
+
+    st.write("### Answer")
+    st.write(response["message"]["content"])
+
+    st.write("### Sources")
+
+    for d in docs:
+        st.write(d.metadata["source"])

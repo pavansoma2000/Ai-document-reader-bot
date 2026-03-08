@@ -1,0 +1,40 @@
+import ollama
+from langchain.vectorstores import Chroma
+from langchain.embeddings import HuggingFaceEmbeddings
+
+embeddings = HuggingFaceEmbeddings()
+
+db = Chroma(
+    persist_directory="vectordb",
+    embedding_function=embeddings
+)
+
+query = input("Ask a question: ")
+
+docs = db.similarity_search(query, k=3)
+
+context = "\n".join([d.page_content for d in docs])
+
+prompt = f"""
+Answer only using the context below.
+
+Context:
+{context}
+
+Question:
+{query}
+"""
+
+response = ollama.chat(
+    model="llama3",
+    messages=[{"role":"user","content":prompt}]
+)
+
+print("\nAnswer:\n")
+print(response["message"]["content"])
+
+print("\nSources:")
+
+
+for d in docs:
+    print(d.metadata["source"])
