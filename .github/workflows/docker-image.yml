@@ -1,18 +1,47 @@
-name: Docker Image CI
+name: CI/CD - Build & Deploy via SSH
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches:
+      - main        # Triggers on push to main branch
 
 jobs:
-
-  build:
-
+  deploy:
+    name: Deploy to Server
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+      # 1. Checkout the code
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. SSH into server and deploy
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            # Navigate to your project directory
+            cd /opt/myapp
+
+            # Pull latest code from GitHub
+            git pull origin main
+
+            # Stop and remove existing container (if running)
+            docker stop myapp-container || true
+            docker rm myapp-container || true
+
+            # Build the new Docker image
+            docker build -t myapp:latest .
+
+            # Start the new container
+            docker run -d \
+              --name myapp-container \
+              --restart unless-stopped \
+              -p 3000:3000 \
+              myapp:latest
+
+            echo "✅ Deployment complete!"
