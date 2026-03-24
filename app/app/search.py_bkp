@@ -15,7 +15,7 @@ docs = db.similarity_search(query, k=3)
 
 context = "\n".join([d.page_content for d in docs])
 
-prompt = f"""
+prompt = f"
 Answer only using the context below.
 
 Context:
