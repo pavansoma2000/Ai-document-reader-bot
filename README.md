@@ -1,4 +1,4 @@
-# Ai-document-reader-bot
+Ai-document-reader-bot
 
 The AI Document Search Bot is an intelligent document assistant that allows users to search and retrieve information from a centralized document repository. The system uses AI-powered semantic search and retrieval techniques to find relevant information from stored documents and generate answers strictly based on the content of those documents..
 
